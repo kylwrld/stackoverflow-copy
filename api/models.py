@@ -37,7 +37,9 @@ class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="comments")
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="comments", null=True, blank=True)
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name="comments", null=True, blank=True)
+    content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 ###
 
@@ -49,7 +51,7 @@ class Vote(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="votes")
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="votes", null=True, blank=True)
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='votes', null=True, blank=True)
-    vote = models.BooleanField()
+    vote = models.BooleanField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

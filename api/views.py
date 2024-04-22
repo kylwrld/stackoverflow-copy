@@ -93,7 +93,7 @@ class AnswerView(APIView):
         data = request.data
         answer_serializer = AnswerSerializer(data=data)
         if answer_serializer.is_valid():
-            question = Question.objects.get(id=data['question_id'])
+            question = get_object_or_404(Question, id=data["question_id"])
             answer_serializer.save(user=user, question=question)
             return Response({"detail":"approved", "answer":answer_serializer.data}, status=status.HTTP_201_CREATED)
         return Response(answer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -103,3 +103,28 @@ class AnswerView(APIView):
         answer_serializer = AnswerSerializer(answer)
         
         return Response({"detail":"approved", "answer":answer_serializer.data}, status=status.HTTP_200_OK)
+
+class CommentView(APIView):
+    permission_classes = [IsGetOrIsAuthenticated]
+
+    # content, question_id or answer_id
+    def post(self, request: WSGIRequest, format=None):
+        user = request.user
+        data: dict = request.data
+        comment_serializer = CommentSerializer(data=data)
+        if comment_serializer.is_valid():
+            if data.get("question_id", False):
+                question = get_object_or_404(Question, id=data["question_id"])
+                comment_serializer.save(user=user, question=question)
+            if data.get("answer_id", False):
+                answer = get_object_or_404(Answer, id=data["answer_id"])
+                comment_serializer.save(user=user, answer=answer)
+
+            return Response({"detail":"approved", "comment":comment_serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(comment_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request: WSGIRequest, pk, format=None):
+        comment = get_object_or_404(Comment, pk=pk)
+        comment_serializer = CommentSerializer(comment)
+        
+        return Response({"detail":"approved", "answer":comment_serializer.data}, status=status.HTTP_200_OK)
