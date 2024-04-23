@@ -143,7 +143,7 @@ WSGI_APPLICATION = 'stcopy.wsgi.application'
 # }
 
 DATABASES = {
-    'default': dj_database_url.parte(env('DATABASE_URL'))
+    'default': dj_database_url.parse(env('DATABASE_URL'))
 }
 
 
