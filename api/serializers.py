@@ -54,3 +54,9 @@ class QuestionSerializer(serializers.ModelSerializer):
             data["question_comments"] = data.pop("comments")
         
         return data
+    
+class BookmarksSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bookmark
+        fields = ["user", "question", "answer", "created_at"]
+        read_only_fields = ("user",)

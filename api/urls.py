@@ -16,6 +16,7 @@ urlpatterns = [
     path('api/comment/', views.CommentView.as_view(), name='comment'),
     path('api/comment/<int:pk>/', views.CommentView.as_view(), name='comment_pk'),
     path('api/vote/', views.VoteView.as_view(), name='vote'),
+    path('api/bookmark/', views.BookmarkView.as_view(), name='bookmark'),
 
     
     path("api/token/", TokenObtainPairView.as_view(), name='token_obtain_pair'),

@@ -147,3 +147,33 @@ class VoteView(APIView):
             
             return Response({"detail":"approved", "vote":vote_serializer.data}, status=status.HTTP_201_CREATED)
         return Response(vote_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class BookmarkView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    # question_id or answer_id
+    def post(self, request: WSGIRequest, fomart=None):
+        user = request.user
+        data: dict = request.data
+        bookmark_serializer = BookmarksSerializer(data=data)
+        print("a")
+        if bookmark_serializer.is_valid():
+            if data.get("question_id", False):
+                question = get_object_or_404(Question, id=data["question_id"])
+                bookmark_serializer.save(user=user, question=question)
+            if data.get("answer_id", False):
+                answer = get_object_or_404(Answer, id=data["answer_id"])
+                bookmark_serializer.save(user=user, answer=answer)
+            
+            return Response({"detail":"approved", "bookmark":bookmark_serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(bookmark_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request: WSGIRequest, format=None):
+        user = request.user
+        bookmarks = Bookmark.objects.filter(user=user)
+        print(user)
+        bookmarks_serializer = BookmarksSerializer(bookmarks, many=True)
+
+        return Response({"detail":"approved", "bookmark":bookmarks_serializer.data}, status=status.HTTP_200_OK)
+        
+
