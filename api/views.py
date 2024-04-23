@@ -128,3 +128,22 @@ class CommentView(APIView):
         comment_serializer = CommentSerializer(comment)
         
         return Response({"detail":"approved", "answer":comment_serializer.data}, status=status.HTTP_200_OK)
+    
+class VoteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    # true or false, question_id or answer_id
+    def post(self, request: WSGIRequest, fomart=None):
+        user = request.user
+        data: dict = request.data
+        vote_serializer = VoteSerializer(data=data)
+        if vote_serializer.is_valid():
+            if data.get("question_id", False):
+                question = get_object_or_404(Question, id=data["question_id"])
+                vote_serializer.save(user=user, question=question)
+            if data.get("answer_id", False):
+                answer = get_object_or_404(Answer, id=data["answer_id"])
+                vote_serializer.save(user=user, answer=answer)
+            
+            return Response({"detail":"approved", "vote":vote_serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(vote_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

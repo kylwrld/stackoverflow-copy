@@ -26,12 +26,25 @@ class Question(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    @property
+    def n_votes(self):
+        print(self)
+        positive = Vote.objects.filter(question_id=self.id, vote=True).count()
+        negative = Vote.objects.filter(question_id=self.id, vote=False).count()
+        return positive - negative
+
 class Answer(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="answers")
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")    
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def n_votes(self):
+        positive = Vote.objects.filter(answer_id=self.id, vote=True).count()
+        negative = Vote.objects.filter(answer_id=self.id, vote=False).count()
+        return positive - negative
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="comments")

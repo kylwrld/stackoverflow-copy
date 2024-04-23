@@ -13,6 +13,11 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'email', "profile"]
 
+class VoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vote
+        fields = ['vote']
+
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
@@ -24,7 +29,7 @@ class AnswerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Answer
-        fields = ['id', 'content', 'created_at', 'updated_at', 'user', 'comments']
+        fields = ['id', 'content', 'n_votes', 'created_at', 'updated_at', 'user', 'comments']
         read_only_fields = ('user',)
 
     def to_representation(self, instance):
@@ -37,11 +42,11 @@ class AnswerSerializer(serializers.ModelSerializer):
 class QuestionSerializer(serializers.ModelSerializer):    
     answers = AnswerSerializer(read_only=True, many=True)
     comments = CommentSerializer(read_only=True, many=True)
-    
+
     class Meta:
         model = Question
-        fields = ['id', 'title', 'content', 'created_at', 'updated_at', 'user', 'answers', 'comments']
-        read_only_fields = ('user',)
+        fields = ['id', 'title', 'content', 'n_votes', 'created_at', 'updated_at', 'user', 'answers', 'comments']
+        read_only_fields = ('user', 'votes')
 
     def to_representation(self, instance):
         data = super(QuestionSerializer, self).to_representation(instance)
